@@ -1,4 +1,4 @@
-FROM ruby:2.6
+FROM ruby:2.6 AS builder
 
 ARG FEEDBIN_URL
 ARG FEEDBIN_REPO
@@ -20,7 +20,20 @@ RUN gem install bundler -v '2.1.2' \
     && bundle install \
     && bundle exec rake assets:precompile
 
+RUN rm -rf .git
+
 RUN sed -i 's/-c [[:digit:]]*/-c ${SIDEKIQ_CONCURRENCY:-1}/g' /app/Procfile
+
+FROM ruby:2.6
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libidn11-dev postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app /app
+COPY --from=builder /usr/local/bundle /usr/local/bundle
 
 ENV RAILS_SERVE_STATIC_FILES=true
 

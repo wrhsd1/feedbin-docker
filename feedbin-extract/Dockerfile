@@ -6,7 +6,8 @@ WORKDIR /app
 
 RUN git clone ${FEEDBIN_EXTRACT_REPO:-https://github.com/feedbin/extract.git} /app \
     && npm install \
-    && mkdir users 
+    && mkdir users \
+    && rm -rf .git
 
 COPY docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 
