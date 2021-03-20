@@ -5,7 +5,7 @@ ARG FEEDBIN_IMAGE_REPO
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libopencv-dev \
+    && apt-get install -y --no-install-recommends libvips \
     && rm -rf /var/lib/apt/lists/* \
     && git clone ${FEEDBIN_IMAGE_REPO:-https://github.com/feedbin/image.git} /app \
     && gem install bundler \
