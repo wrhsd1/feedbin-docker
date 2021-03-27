@@ -10,6 +10,7 @@ RUN apt-get update \
     libldap-2.4-2 \
     libidn11-dev \
     dnsutils \
+    nodejs \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/* \
     && gem install idn-ruby -v '0.1.0'
@@ -29,7 +30,7 @@ FROM ruby:2.6
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libidn11-dev postgresql-client \
+    && apt-get install -y --no-install-recommends libidn11-dev nodejs postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app /app
