@@ -7,13 +7,7 @@ jobs:
     strategy:
       matrix:
         image:
-          - name: feedbin-web
-            context: .
-            file: Dockerfile
-            build-args: FEEDBIN_REPO=https://github.com/AndreasSko/feedbin.git
-            tag: latest
-
-          - name: feedbin-web
+         - name: feedbin-web
             context: .
             file: alpine.Dockerfile
             build-args: FEEDBIN_REPO=https://github.com/AndreasSko/feedbin.git
@@ -57,6 +51,7 @@ jobs:
         with:
           context: ${{ matrix.image.context }}
           push: true
+          platforms: linux/arm64，linux/amd64
           build-args: ${{ matrix.image.build-args }}
           tags: wrhsd/${{ matrix.image.name }}:${{ steps.date.outputs.today }} 
           file: ${{ matrix.image.context }}/${{ matrix.image.file }}
