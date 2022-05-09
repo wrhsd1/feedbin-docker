@@ -1,6 +1,9 @@
-name: Build
+name: build
+
 on:
   workflow_dispatch:
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
