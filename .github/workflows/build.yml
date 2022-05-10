@@ -65,5 +65,8 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: ${{ matrix.image.build-args }}
-          tags: wrhsd/${{ matrix.image.name }}:${{ steps.date.outputs.today }} 
+          tags: |
+            wrhsd/${{ matrix.image.name }}:latest
+            wrhsd/${{ matrix.image.name }}:${{ steps.date.outputs.today }} 
           file: ${{ matrix.image.context }}/${{ matrix.image.file }}
+          
