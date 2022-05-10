@@ -46,7 +46,7 @@ services:
     mem_limit: 512m
 
   feedbin-workers:
-    image: wrhsd/feedbin-workers:latest
+    image: wrhsd/feedbin-web:latest
     env_file:
      - ./.env
     command: foreman start
