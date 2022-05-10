@@ -12,16 +12,10 @@ jobs:
         image:
           - name: feedbin-web
             context: .
-            file: Dockerfile
+            file: alpine.Dockerfile
             build-args: FEEDBIN_REPO=https://github.com/AndreasSko/feedbin.git
             tag: latest
 
-          - name: feedbin-web
-            context: .
-            file: alpine.Dockerfile
-            build-args: FEEDBIN_REPO=https://github.com/AndreasSko/feedbin.git
-            tag: alpine
-    
           - name: feedbin-extract
             file: Dockerfile
             context: feedbin-extract
