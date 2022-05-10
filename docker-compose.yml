@@ -1,0 +1,122 @@
+version: '2.2'
+
+volumes:
+  feedbin_redis:
+  feedbin_db:
+  feedbin_elasticsearch:
+  feedbin_minio:
+  feedbin_caddy:
+
+services:
+
+  feedbin-caddy:
+    image: caddy
+    volumes:
+      - feedbin_caddy:/etc/ssl/caddy
+      - ./caddy/Caddyfile:/etc/Caddyfile:ro
+    env_file:
+     - ./.env
+    ports:
+      - 80:80
+      - 443:443
+      - 2015:2015
+    restart: always
+
+  feedbin-minio:
+    image: minio/minio
+    volumes:
+    - feedbin_minio:/data
+    env_file:
+     - ./.env
+    command: server /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    restart: always
+
+  feedbin-web:
+    image: wrhsd/feedbin-web:latest
+    environment:
+      PORT: 3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+    env_file:
+     - ./.env
+    command: bundle exec rails s --port 3000 --binding 0.0.0.0
+    restart: always
+    mem_limit: 512m
+
+  feedbin-workers:
+    image: wrhsd/feedbin-workers:latest
+    env_file:
+     - ./.env
+    command: foreman start
+    restart: always
+    mem_limit: 512m
+
+  feedbin-elasticsearch:
+    image: elasticsearch:8.2.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+    volumes:
+      - feedbin_elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    restart: always
+
+  feedbin-refresher:
+    image: wrhsd/feedbin-refresher:latest
+    env_file:
+     - ./.env
+    restart: always
+    mem_limit: 512m
+
+  feedbin-image:
+    image: wrhsd/feedbin-image:latest
+    env_file:
+      - ./.env
+    restart: always
+    mem_limit: 512m
+
+  camo:
+    image: skrobul/camo
+    environment:
+      - PORT=8081
+    env_file:
+     - ./.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+    restart: always
+
+  feedbin-memcached:
+    image: memcached:1.5
+    restart: always
+
+  feedbin-redis:
+    image: redis:5
+    command: "redis-server --appendonly yes"
+    volumes:
+      - feedbin_redis:/data
+    restart: always
+
+  feedbin-postgres:
+    image: postgres:13
+    env_file:
+     - ./.env
+    volumes:
+      - feedbin_db:/var/lib/postgresql/data
+    restart: always
+    mem_limit: 512m
+
+  feedbin-extract:
+    image: wrhsd/feedbin-extract:latest
+    env_file:
+      - ./.env
+    restart: always
+    mem_limit: 512m
