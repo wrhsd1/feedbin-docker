@@ -113,7 +113,7 @@ services:
     restart: unless-stopped
 
   feedbin-elasticsearch:
-    image: wrhsd/elasticsearch-2.4:latest
+    image: elasticsearch:2.4
     container_name: feedbin-elasticsearch
     environment:
       - bootstrap.memory_lock=true
